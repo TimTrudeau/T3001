@@ -1,0 +1,13 @@
+PROGRAM CLIQ_cycle_test;
+VAR
+   mytrue           : INTEGER;
+   myfalse          : INTEGER;
+
+BEGIN {CLIQ cycle test}
+
+   IF FALSE:
+        mytrue := 20;
+    ELSE:
+        myfalse := 10;
+   ENDIF;
+END.

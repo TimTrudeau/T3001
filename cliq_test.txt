@@ -1,0 +1,61 @@
+PROGRAM CLIQ_cycle_test;
+VAR
+   count           : INTEGER;
+   passes          : INTEGER;
+   fails           : INTEGER;
+   running		   : BOOL;
+   turned          : BOOL;
+
+IO
+   linerLimit      : PININ 6;
+   rotationLimit   : PININ 7;
+   commands        : PINOUT 23;
+   response        : PINOUT 13;
+
+WAYPOINT {move distance, motion speed(mm/sec)}
+  {without sign moves are absolute; with sign moves are relative}
+  {Linear waypoints}
+   approach    := 250, 300;    {absolute}
+   poised      := 255, 20;     {absolute}
+   inserted    := +33.7, 55;   {relative}
+   return      := -33.7, 20;   {relative}
+ {Rotation waypoints}
+    to_vertical:= 0, (90*5);   {absolute}
+    unlock     := -90, 30;     {relative}
+    relock     := -110, 40;    {relative}
+
+BEGIN {CLIQ cycle test}
+   running := FALSE;
+   turned := FALSE;
+   IF TRUE:
+        passes := 20;
+    ELSE:
+        passes := 10;
+   ENDIF;
+   count := 0;
+   fails := 0;
+   ROTATE to_vertical;
+   MOVETO 0, 100;
+   HOME;
+   WAIT 2;
+   MOVETO approach;
+   WAIT 3;
+   LOOP:
+		running := FALSE;
+        WAIT 1;
+        MOVETO poised;
+        MOVETO inserted;
+        WAIT 0.5;
+        ROTATE unlock;
+        WAIT 0.2;
+        ROTATE relock;
+        IF turned == TRUE:
+            passes := passes + 1;
+        ELSE:
+            fails := fails + 1;
+        ENDIF;
+        count := count + 1;
+   UNTIL fails >= 3;
+   running := FALSE;
+   STOP;
+END.  {CLIQ cycle test}
